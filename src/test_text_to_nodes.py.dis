@@ -1,0 +1,77 @@
+import unittest
+from textnode import TextNode, TextType
+from text_to_nodes import text_to_nodes
+
+
+class TestTextToNodes(unittest.TestCase):
+    def test_text_to_nodes_valid(self):
+        input_text = (
+            "This is **text** with an *italic* word and a `code block` "
+            "and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) "
+            "and a [link](https://boot.dev)"
+        )
+
+        # Expected output
+        expected = [
+            TextNode("This is ", TextType.TEXT),
+            TextNode("text", TextType.BOLD),
+            TextNode(" with an ", TextType.TEXT),
+            TextNode("italic", TextType.ITALIC),
+            TextNode(" word and a ", TextType.TEXT),
+            TextNode("code block", TextType.CODE),
+            TextNode(" and an ", TextType.TEXT),
+            TextNode("obi wan image", TextType.IMAGE,
+                     "https://i.imgur.com/fJRm4Vk.jpeg"),
+            TextNode(" and a ", TextType.TEXT),
+            TextNode("link", TextType.LINK, "https://boot.dev")
+        ]
+
+        result = text_to_nodes(input_text)
+
+        # Test the length of the result
+        self.assertEqual(len(result), len(expected))
+
+        # Test each node
+        for r, e in zip(result, expected):
+            self.assertEqual(r.text, e.text)
+            self.assertEqual(r.text_type, e.text_type)
+            self.assertEqual(getattr(r, 'additional', None),
+                             getattr(e, 'additional', None))
+
+    def test_text_to_nodes_no_markdown(self):
+        input_text = "This is a plain text without markdown."
+
+        expected = [
+            TextNode("This is a plain text without markdown.", TextType.TEXT)
+        ]
+
+        result = text_to_nodes(input_text)
+
+        self.assertEqual(len(result), len(expected))
+
+        for r, e in zip(result, expected):
+            self.assertEqual(r.text, e.text)
+            self.assertEqual(r.text_type, e.text_type)
+            self.assertEqual(getattr(r, 'additional', None),
+                             getattr(e, 'additional', None))
+
+    def test_text_to_nodes_empty(self):
+        input_text = ""
+
+        expected = [
+            TextNode("", TextType.TEXT)
+        ]
+
+        result = text_to_nodes(input_text)
+
+        self.assertEqual(len(result), len(expected))
+
+        for r, e in zip(result, expected):
+            self.assertEqual(r.text, e.text)
+            self.assertEqual(r.text_type, e.text_type)
+            self.assertEqual(getattr(r, 'additional', None),
+                             getattr(e, 'additional', None))
+
+
+if __name__ == "__main__":
+    unittest.main()
