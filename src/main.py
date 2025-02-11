@@ -1,13 +1,8 @@
-from textnode import TextNode, TextType
+from generate_public import generate_public
 
 
 def main():
-    text = TextNode(
-        "This is a text node",
-        TextType.BOLD,
-        "https://www.boot.dev"
-    )
-    print(text)
+    generate_public("static", "public")
 
 
 if __name__ == "__main__":

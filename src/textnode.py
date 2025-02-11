@@ -8,6 +8,7 @@ class TextType(Enum):
     CODE = "code"
     LINK = "link"
     IMAGE = "image"
+    STRIKE_THROUGH = "strike"
 
 
 class TextTag(Enum):
@@ -17,6 +18,7 @@ class TextTag(Enum):
     code = "code"
     link = "a"
     image = "img"
+    strike = "strike"
 
 
 class TextNode():

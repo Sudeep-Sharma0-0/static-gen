@@ -1,62 +1,45 @@
 import unittest
-from split_nodes import split_nodes_delimiter
 from textnode import TextNode, TextType
+from split_nodes import split_nodes_delimiter
 
 
 class TestSplitNodesDelimiter(unittest.TestCase):
-    def test_plain_text(self):
-        text = "This is plain text."
-        expected = [
-            TextNode("This is plain text.", TextType.TEXT)
-        ]
-        result = split_nodes_delimiter(text)
+    def test_split_nodes_valid_input(self):
+        old_nodes = [TextNode("This is **bold** text.", TextType.TEXT)]
+        delimiter = "**"
+        text_type = TextType.BOLD
 
-        self.assertEqual(expected, result)
-
-    def test_bold_text(self):
-        text = "This is **bold** text."
         expected = [
             TextNode("This is ", TextType.TEXT),
-            TextNode("bold", TextType.BOLD),
-            TextNode(" text.", TextType.TEXT),
+            TextNode("bold", text_type),
+            TextNode(" text.", TextType.TEXT)
         ]
-        result = split_nodes_delimiter(text)
 
-        self.assertEqual(expected, result)
+        result = split_nodes_delimiter(old_nodes, delimiter, text_type)
 
-    def test_italic_text(self):
-        text = "This is *italic* text."
-        expected = [
-            TextNode("This is ", TextType.TEXT),
-            TextNode("italic", TextType.ITALIC),
-            TextNode(" text.", TextType.TEXT),
-        ]
-        result = split_nodes_delimiter(text)
+        self.assertEqual(len(result), len(expected))
+        for r, e in zip(result, expected):
+            self.assertEqual(r.text, e.text)
+            self.assertEqual(r.text_type, e.text_type)
 
-        self.assertEqual(expected, result)
+    def test_split_nodes_no_delimiters(self):
+        old_nodes = [TextNode("This has no formatting.", TextType.TEXT)]
+        delimiter = "**"
+        text_type = TextType.BOLD
 
-    def test_code_block_text(self):
-        text = "This is `code` text."
-        expected = [
-            TextNode("This is ", TextType.TEXT),
-            TextNode("code", TextType.CODE),
-            TextNode(" text.", TextType.TEXT),
-        ]
-        result = split_nodes_delimiter(text)
+        expected = old_nodes
 
-        self.assertEqual(expected, result)
+        result = split_nodes_delimiter(old_nodes, delimiter, text_type)
 
-    def test_first_char_delimiter(self):
-        text = "*This* is `code` text."
-        expected = [
-            TextNode("This", TextType.ITALIC),
-            TextNode(" is ", TextType.TEXT),
-            TextNode("code", TextType.CODE),
-            TextNode(" text.", TextType.TEXT),
-        ]
-        result = split_nodes_delimiter(text)
+        self.assertEqual(result, expected)
 
-        self.assertEqual(expected, result)
+    def test_split_nodes_invalid_input(self):
+        old_nodes = [TextNode("This is **invalid markdown.", TextType.TEXT)]
+        delimiter = "**"
+        text_type = TextType.BOLD
+
+        with self.assertRaises(ValueError):
+            split_nodes_delimiter(old_nodes, delimiter, text_type)
 
 
 if __name__ == "__main__":
