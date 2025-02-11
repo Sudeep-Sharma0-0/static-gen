@@ -25,7 +25,7 @@ def markdown_to_html(markdown):
         if block_type == "paragraph":
             html_children.append(paragraph_to_html(block))
 
-    html_node = ParentNode("body", children=html_children)
+    html_node = ParentNode("div", children=html_children)
     return html_node.to_html()
 
 
